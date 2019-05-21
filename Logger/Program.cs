@@ -35,6 +35,51 @@ namespace Logger
                 _fileName = _filePath + _fileNameInit + "_" + today + _logSeq.ToString().PadLeft(_logSeqLength - _logSeq.ToString().Length, '0') + ".txt";
                 return _fileName;
             }
+
+            public static void AddFileNamesToList(string sourceDir, List<string> allFiles)
+            {
+
+                string[] fileEntries = Directory.GetFiles(sourceDir);
+                foreach (string fileName in fileEntries)
+                {
+                    allFiles.Add(fileName);
+                }
+
+                //Recursion    
+                string[] subdirectoryEntries = Directory.GetDirectories(sourceDir);
+                foreach (string item in subdirectoryEntries)
+                {
+                    // Avoid "reparse points"
+                    if ((File.GetAttributes(item) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint)
+                    {
+                        AddFileNamesToList(item, allFiles);
+                    }
+                }
+
+            }
+
+            public static List<string> GetFileCollection(string timeRange)
+            {
+                //string sourceFolder = @"C:\Test";
+                //string searchWord = ".class1";
+
+                List<string> allFiles = new List<string>();
+                List<string> filesContaingsearchPattern = new List<string>();
+                AddFileNamesToList(_filePath.Substring(0, _filePath.Length - 1), allFiles);
+                foreach (string fileName in allFiles)
+                {
+                    string contents = File.ReadAllText(fileName);
+                    if (contents.Contains(timeRange))
+                    {
+                        //Console.WriteLine(fileName);
+                        filesContaingsearchPattern.Add(fileName);
+                    }
+                }
+
+                //Console.WriteLine(" ");
+                //System.Console.ReadKey();
+                return filesContaingsearchPattern;
+            }
         }
 
 
@@ -62,15 +107,15 @@ namespace Logger
 
         public abstract class LogBase
         {
-            public abstract void Log(string fileName, string message);
+            public abstract void Log(string fileName, string message, bool appendFlag);
         }
 
         public class FileLogger : LogBase
         {
             //public string filePath = @"C:\Temp\Log.txt";
-            public override void Log(string fileName, string message)
+            public override void Log(string fileName, string message, bool appendFlag)
             {
-                using (StreamWriter streamWriter = new StreamWriter(fileName, append: true))
+                using (StreamWriter streamWriter = new StreamWriter(fileName, appendFlag))
                 {
                     //long length = streamWriter.BaseStream.Length;
                     //if (length >= Logger._logSeqLength)
@@ -92,7 +137,14 @@ namespace Logger
             string FileName = lg.GetFileName();
             FileLogger fl = new FileLogger();
             Message msg = new Message(Logger.LogType.Info, "Ilan", "Hello World");
-            fl.Log(FileName, msg.ToString());
+            //Enumerable.Range(0, 2000)
+                //.ToList()
+                //.ForEach(x => fl.Log(FileName, msg.ToString(), true));
+                
+            fl.Log(FileName, msg.ToString(), true);
+            List<string> fileNames = Logger.GetFileCollection("20190520");
+            fl.Log(@"C:\Temp\Collection.txt", String.Join(", ", fileNames.ToArray()), false);
+
             Console.ReadLine();
         }
     }
