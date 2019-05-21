@@ -1,0 +1,6 @@
+c:\users\user\documents\visual studio 2017\Projects\Logger\Logger\obj\Debug\Logger.csprojResolveAssemblyReference.cache
+c:\users\user\documents\visual studio 2017\Projects\Logger\Logger\bin\Debug\Logger.exe.config
+c:\users\user\documents\visual studio 2017\Projects\Logger\Logger\bin\Debug\Logger.exe
+c:\users\user\documents\visual studio 2017\Projects\Logger\Logger\bin\Debug\Logger.pdb
+c:\users\user\documents\visual studio 2017\Projects\Logger\Logger\obj\Debug\Logger.exe
+c:\users\user\documents\visual studio 2017\Projects\Logger\Logger\obj\Debug\Logger.pdb
