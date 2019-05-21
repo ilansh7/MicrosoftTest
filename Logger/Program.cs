@@ -11,14 +11,29 @@ namespace Logger
     {
         class Logger
         {
-            public static int LogSeq = 1;
-            public static int LogSeqLength = 5;
-            public static string FileName = "Log";
-            public static string FilePath = @"C:\Temp\";
+            static int _logSeq = 1;
+            static int _logSeqLength = 5;
+            static long _logSizelimit = 150;
+            static string _fileNameInit = "Log";
+            static string _filePath = @"C:\Temp\";
+            static public string _fileName;
 
             public enum LogType
             {
                 Error, Warning, Info
+            }
+
+            public string GetFileName()
+            {
+                string today = DateTime.Now.ToString("yyyyMMdd");
+                _fileName = _filePath + _fileNameInit + "_" + today + _logSeq.ToString().PadLeft(_logSeqLength - _logSeq.ToString().Length, '0') + ".txt";
+                long length = new FileInfo(_fileName).Length;
+                if (length >= _logSizelimit)
+                {
+                    _logSeq++;
+                }
+                _fileName = _filePath + _fileNameInit + "_" + today + _logSeq.ToString().PadLeft(_logSeqLength - _logSeq.ToString().Length, '0') + ".txt";
+                return _fileName;
             }
         }
 
@@ -57,6 +72,12 @@ namespace Logger
             {
                 using (StreamWriter streamWriter = new StreamWriter(fileName, append: true))
                 {
+                    //long length = streamWriter.BaseStream.Length;
+                    //if (length >= Logger._logSeqLength)
+                    // {
+
+                    //}
+
                     streamWriter.WriteLine(message);
                     streamWriter.Close();
                 }
@@ -67,10 +88,11 @@ namespace Logger
         {
             string today = DateTime.Now.ToString("yyyyMMdd");
             Logger lg = new Logger();
-            Logger.FileName = Logger.FilePath + Logger.FileName + "_" + today + Logger.LogSeq.ToString().PadLeft(Logger.LogSeqLength - Logger.LogSeq.ToString().Length, '0') + ".txt";
+            //Logger._fileName = Logger._filePath + Logger._fileName + "_" + today + Logger._logSeq.ToString().PadLeft(Logger._logSeqLength - Logger._logSeq.ToString().Length, '0') + ".txt";
+            string FileName = lg.GetFileName();
             FileLogger fl = new FileLogger();
             Message msg = new Message(Logger.LogType.Info, "Ilan", "Hello World");
-            fl.Log(Logger.FileName, msg.ToString());
+            fl.Log(FileName, msg.ToString());
             Console.ReadLine();
         }
     }
